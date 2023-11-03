@@ -6,19 +6,13 @@ import io.jsonwebtoken.security.Keys;
 
 import java.net.URL;
 import java.security.Key;
-import java.security.Security;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import java.util.Map;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 public class AzureTokenValidator {
 
     public static void main(String[] args) throws Exception {
-        // Initialize Bouncy Castle as a security provider
-        Security.addProvider(new BouncyCastleProvider());
-
         // Replace these variables with your own values
         String azureToken = "your_azure_token_here";
         String jwksUri = "https://login.microsoftonline.com/{tenant}/discovery/v2.0/keys"; // Replace {tenant} with your Azure AD tenant ID
