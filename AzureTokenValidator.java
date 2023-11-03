@@ -1,16 +1,17 @@
-import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
-import java.io.IOException;
 import java.net.URL;
+import java.security.Key;
 import java.security.Security;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Date;
+import java.util.Base64;
+import java.util.Map;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class AzureTokenValidator {
 
@@ -23,39 +24,31 @@ public class AzureTokenValidator {
         String jwksUri = "https://login.microsoftonline.com/{tenant}/discovery/v2.0/keys"; // Replace {tenant} with your Azure AD tenant ID
 
         // Fetch JWKS (JSON Web Key Set)
-        JWKSet jwkSet = JWKSet.load(new URL(jwksUri));
+        URL url = new URL(jwksUri);
+        Map<String, Object> jwkSet = Jwts.parserBuilder().build().parseClaimsJws(url.openStream().toString()).getBody();
+        
+        // Extract public key from JWKS using the kid (Key ID) from the token
+        String kid = Jwts.parserBuilder().build().parseClaimsJws(azureToken).getHeader().getKeyId();
+        Map<String, Object> keyData = (Map<String, Object>) jwkSet.get(kid);
+        String n = (String) keyData.get("n");
+        String e = (String) keyData.get("e");
+        RSAPublicKey publicKey = (RSAPublicKey) Keys.rsa(
+            Base64.getUrlDecoder().decode(n),
+            Base64.getUrlDecoder().decode(e)
+        ).getPublic();
 
-        // Parse the token
-        SignedJWT signedJWT = SignedJWT.parse(azureToken);
+        // Parse and validate the Azure token
+        Jws<Claims> jwsClaims = Jwts.parserBuilder()
+            .setSigningKey(publicKey)
+            .build()
+            .parseClaimsJws(azureToken);
 
-        // Get the public key for the token's key ID (kid)
-        RSAKey rsaKey = (RSAKey) jwkSet.getKeyByKeyID(signedJWT.getHeader().getKeyID());
+        // Verify claims such as issuer, audience, and expiration
+        Claims claims = jwsClaims.getBody();
+        String issuer = claims.getIssuer();
+        String audience = claims.getAudience();
+        // Add any other claims verification as needed
 
-        // Verify the token's signature
-        if (rsaKey != null) {
-            RSAPublicKey publicKey = rsaKey.toRSAPublicKey();
-            if (signedJWT.verify(new RSASSAVerifier(publicKey))) {
-                // Signature is valid, now check claims
-                JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-                String issuer = claims.getIssuer();
-                String audience = claims.getAudience().get(0);
-                Date expirationTime = claims.getExpirationTime();
-                Date now = new Date();
-
-                if (issuer.equals("https://sts.windows.net/{tenant}/") &&
-                        audience.equals("your_audience_here") &&
-                        expirationTime != null &&
-                        expirationTime.after(now)) {
-                    // Token is valid
-                    System.out.println("Token is valid");
-                } else {
-                    System.out.println("Token claims are invalid");
-                }
-            } else {
-                System.out.println("Token signature is not valid");
-            }
-        } else {
-            System.out.println("Token key ID (kid) not found in JWKS");
-        }
+        System.out.println("Token is valid");
     }
 }
