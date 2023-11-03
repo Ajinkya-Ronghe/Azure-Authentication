@@ -18,6 +18,12 @@ public class AzureTokenValidator {
         String azureToken = "your_azure_token_here";
         String jwksUri = "https://login.microsoftonline.com/{tenant}/discovery/v2.0/keys"; // Replace {tenant} with your Azure AD tenant ID
 
+        // Decode the header of the JWT token to retrieve the 'kid'
+        String headerEncoded = azureToken.split("\\.")[0];
+        String headerJson = new String(Base64.getUrlDecoder().decode(headerEncoded));
+        Map<String, Object> headerMap = new ObjectMapper().readValue(headerJson, Map.class);
+        String tokenKid = (String) headerMap.get("kid");
+
         // Fetch JWKS (JSON Web Key Set)
         URL url = new URL(jwksUri);
         ObjectMapper mapper = new ObjectMapper();
@@ -25,7 +31,7 @@ public class AzureTokenValidator {
         Map<String, Object> keyData = null;
 
         for (Map<String, Object> key : (Iterable<Map<String, Object>>) jwkSetMap.get("keys")) {
-            if (azureToken.split("\\.")[0].contains((CharSequence) key.get("kid"))) {
+            if (tokenKid.equals(key.get("kid"))) {
                 keyData = key;
                 break;
             }
@@ -37,8 +43,11 @@ public class AzureTokenValidator {
 
         String n = (String) keyData.get("n");
         String e = (String) keyData.get("e");
-        BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode(n));
-        BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode(e));
+        byte[] modulusBytes = Base64.getUrlDecoder().decode(n);
+        byte[] exponentBytes = Base64.getUrlDecoder().decode(e);
+
+        BigInteger modulus = new BigInteger(1, modulusBytes);
+        BigInteger exponent = new BigInteger(1, exponentBytes);
         RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
         PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(spec);
 
