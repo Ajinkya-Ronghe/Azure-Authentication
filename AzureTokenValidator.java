@@ -1,11 +1,13 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 
+import java.math.BigInteger;
 import java.net.URL;
 import java.security.KeyFactory;
 import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import java.util.Map;
 
@@ -18,17 +20,27 @@ public class AzureTokenValidator {
 
         // Fetch JWKS (JSON Web Key Set)
         URL url = new URL(jwksUri);
-        Map<String, Object> jwkSet = Jwts.parserBuilder().build().parseClaimsJws(url.openStream().toString()).getBody();
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> jwkSetMap = mapper.readValue(url, Map.class);
+        Map<String, Object> keyData = null;
 
-        // Extract the public key from JWKS using the kid (Key ID) from the token
-        String kid = Jwts.parserBuilder().build().parseClaimsJws(azureToken).getHeader().getKeyId();
-        Map<String, Object> keyData = (Map<String, Object>) jwkSet.get(kid);
+        for (Map<String, Object> key : (Iterable<Map<String, Object>>) jwkSetMap.get("keys")) {
+            if (azureToken.split("\\.")[0].contains((CharSequence) key.get("kid"))) {
+                keyData = key;
+                break;
+            }
+        }
+
+        if (keyData == null) {
+            throw new RuntimeException("Public key not found in JWKS");
+        }
+
         String n = (String) keyData.get("n");
         String e = (String) keyData.get("e");
-        
-        byte[] modulusBytes = Base64.getUrlDecoder().decode(n);
-        byte[] exponentBytes = Base64.getUrlDecoder().decode(e);
-        PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(modulusBytes));
+        BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode(n));
+        BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode(e));
+        RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
+        PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(spec);
 
         // Parse and validate the Azure token
         Jws<Claims> jwsClaims = Jwts.parserBuilder()
@@ -38,10 +50,4 @@ public class AzureTokenValidator {
 
         // Verify claims such as issuer, audience, and expiration
         Claims claims = jwsClaims.getBody();
-        String issuer = claims.getIssuer();
-        String audience = claims.getAudience();
-        // Add any other claims verification as needed
-
-        System.out.println("Token is valid");
-    }
-}
+        String issuer
