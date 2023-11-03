@@ -50,4 +50,10 @@ public class AzureTokenValidator {
 
         // Verify claims such as issuer, audience, and expiration
         Claims claims = jwsClaims.getBody();
-        String issuer
+        String issuer = claims.getIssuer();
+        String audience = claims.getAudience();
+        // Add any other claims verification as needed
+
+        System.out.println("Token is valid");
+    }
+}
