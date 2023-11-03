@@ -1,0 +1,35 @@
+Subject: Today's Updates - Token Validation Approach
+
+Dear [Recipient's Name],
+
+I wanted to provide you with an update on today's discussions and our approach to token validation. 
+
+**Meeting with Jethendri and Deependra:**
+- Today, Jethendri (my manager) and I had a meeting with Deependra to review the existing Pfizer approach for token validation and API flow.
+
+**Meeting Conclusion:**
+- After a thorough discussion, we concluded that it would be best to develop our custom method in Java for token validation. This approach allows us to have more control over the validation process.
+
+**Approach for Azure Token Validation:**
+Here is a summary of the steps we followed to validate the Azure token:
+
+1. **Decode Token Header:** We began by decoding the header of the JWT token to retrieve the 'kid' (Key ID) value.
+
+2. **Retrieve JWKS (JSON Web Key Set):** Next, we fetched the JWKS from the specified URL, which contains a set of public keys for token validation.
+
+3. **Find the Matching Public Key:** We searched the JWKS to find the public key that matches the 'kid' value from the token's header. This key is essential for token verification.
+
+4. **Decode Modulus and Exponent:** From the matching key, we extracted the 'n' (modulus) and 'e' (exponent) values, which are Base64 URL-encoded.
+
+5. **Generate Public Key:** Using the extracted modulus and exponent, we created a public key to be used in the token verification process.
+
+6. **Token Validation:** We parsed and validated the Azure token using the Java JWT library, providing the generated public key for verification. This step checks the signature, issuer, audience, expiration, and other claims to ensure the token's validity.
+
+**Successful Token Validation:**
+I'm pleased to report that our approach was successful, and we were able to validate the Azure token using our Java code. This achievement signifies a significant step forward in our efforts to ensure the security and integrity of our custom application APIs.
+
+If you have any questions or need further details, please don't hesitate to reach out.
+
+Best regards,
+
+[Your Name]
