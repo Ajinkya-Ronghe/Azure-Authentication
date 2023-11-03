@@ -32,30 +32,23 @@
 
     <dependencies>
         <!-- Java JWT for JWT processing -->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.11.2</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>0.11.2</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>0.11.2</version> 
-            <scope>runtime</scope>
-        </dependency>
-
-        <!-- Bouncy Castle for cryptography -->
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.70</version>
-        </dependency>
+         <dependency>
+             <groupId>io.jsonwebtoken</groupId>
+             <artifactId>jjwt-api</artifactId>
+             <version>0.11.2</version>
+         </dependency>
+         <dependency>
+             <groupId>io.jsonwebtoken</groupId>
+             <artifactId>jjwt-impl</artifactId>
+             <version>0.11.2</version>
+             <scope>runtime</scope>
+         </dependency>
+         <dependency>
+             <groupId>io.jsonwebtoken</groupId>
+             <artifactId>jjwt-jackson</artifactId>
+             <version>0.11.2</version> 
+             <scope>runtime</scope>
+         </dependency>
     </dependencies>
 
 </project>
