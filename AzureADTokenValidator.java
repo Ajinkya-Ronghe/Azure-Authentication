@@ -2,12 +2,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
+import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.RSAPublicKeySpec;
+import java.math.BigInteger;
 import java.util.Base64;
 import java.util.Map;
 
@@ -28,14 +29,14 @@ public class AzureADTokenValidator {
             // Decode the JWT header
             String[] splitToken = token.split("\\.");
             String headerJson = new String(Base64.getUrlDecoder().decode(splitToken[0]), StandardCharsets.UTF_8);
-            Map<String, String> header = objectMapper.readValue(headerJson, Map.class);
+            Map<String, Object> header = objectMapper.readValue(headerJson, Map.class);
 
             // Find the key with a matching 'kid' value
-            String kid = header.get("kid");
-            Map<String, String> jwk = null;
+            String kid = (String) header.get("kid");
+            Map<String, Object> jwk = null;
             for (Map<String, Object> key : (Iterable<Map<String, Object>>) response.get("keys")) {
                 if (kid.equals(key.get("kid"))) {
-                    jwk = (Map<String, String>) key;
+                    jwk = key;
                     break;
                 }
             }
@@ -45,9 +46,11 @@ public class AzureADTokenValidator {
             }
 
             // Construct the public key
-            RSAPublicKey publicKey = (RSAPublicKey) Keys.hmacShaKeyFor(
-                Base64.getUrlDecoder().decode((String) jwk.get("n"))
-            );
+            BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode((String) jwk.get("n")));
+            BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode((String) jwk.get("e")));
+            RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
+            KeyFactory factory = KeyFactory.getInstance("RSA");
+            RSAPublicKey publicKey = (RSAPublicKey) factory.generatePublic(spec);
 
             // Validate the token
             Jws<Claims> jwsClaims = Jwts.parserBuilder()
