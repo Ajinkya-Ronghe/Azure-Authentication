@@ -1,0 +1,56 @@
+The options you've mentioned, Client Credentials Flow and Authorization Code Flow, are both part of the OAuth 2.0 protocol, which Azure Active Directory (Azure AD) supports for authentication and authorization. Here is where they fit in:
+
+### 1. Client Credentials Flow
+This falls under the **Application-based Authentication** category. It is used when an application acts on its own behalf to access resources. For example, a daemon service or a web API that does not interact with user credentials but requires access to resources in Azure AD would use the Client Credentials Flow. The application is authenticated based on its registered identity within Azure AD, which is represented by an Application ID and a credential like a client secret or certificate.
+
+### 2. Authorization Code Flow
+This is a part of the **Token-based Authentication** category, specifically the **OAuth 2.0** and **OpenID Connect** protocols. It is used by applications that interact with users and require access to user data. After the user authenticates and authorizes the application, Azure AD issues an authorization code. This code is then sent to the application, which exchanges it for an access token (and optionally a refresh token). This flow is typically used by web applications and mobile apps that have the capability of securely storing the client secret.
+
+Both flows are fundamental to modern authentication and authorization practices, allowing for secure delegated access. The Client Credentials Flow is used for server-to-server communication without user interaction, while the Authorization Code Flow involves user interaction and is used for granting applications permissions on behalf of the user.
+
+
+
+The options you've mentioned, Client Credentials Flow and Authorization Code Flow, are both part of the OAuth 2.0 protocol, which Azure Active Directory (Azure AD) supports for authentication and authorization. Here is where they fit in:
+
+### 1. Client Credentials Flow
+This falls under the **Application-based Authentication** category. It is used when an application acts on its own behalf to access resources. For example, a daemon service or a web API that does not interact with user credentials but requires access to resources in Azure AD would use the Client Credentials Flow. The application is authenticated based on its registered identity within Azure AD, which is represented by an Application ID and a credential like a client secret or certificate.
+
+### 2. Authorization Code Flow
+This is a part of the **Token-based Authentication** category, specifically the **OAuth 2.0** and **OpenID Connect** protocols. It is used by applications that interact with users and require access to user data. After the user authenticates and authorizes the application, Azure AD issues an authorization code. This code is then sent to the application, which exchanges it for an access token (and optionally a refresh token). This flow is typically used by web applications and mobile apps that have the capability of securely storing the client secret.
+
+Both flows are fundamental to modern authentication and authorization practices, allowing for secure delegated access. The Client Credentials Flow is used for server-to-server communication without user interaction, while the Authorization Code Flow involves user interaction and is used for granting applications permissions on behalf of the user.
+
+
+In the context of Azure Active Directory (Azure AD) and application development, the terms "client app" and "server app" typically refer to the two components of a web application or service that interact with each other using Azure AD for authentication and authorization. These terms align with the common web development architecture where you have a frontend (client) and a backend (server).
+
+### Azure Client App
+The "client app" is usually a web app, mobile app, or desktop app that the user interacts with directly. It serves as the frontend:
+
+- **User Interface**: Presents the user with an interface to interact with the application.
+- **Authentication**: Initiates the authentication process with Azure AD to identify the user. This is often done using OAuth 2.0 Authorization Code Flow with PKCE (Proof Key for Code Exchange) or other flows suitable for clients.
+- **Token Acquisition**: Once the user is authenticated, the client app can request tokens from Azure AD to access resources protected by Azure AD.
+- **API Calls**: Uses tokens obtained from Azure AD to make authorized API calls to the server app or other web APIs.
+
+The client app is registered in Azure AD to obtain an Application (client) ID, and depending on the flow, it may also have a client secret or certificate, although public clients like mobile apps typically do not have a client secret due to their inability to store it securely.
+
+### Azure Server App
+The "server app" is the backend part of the application. It could be a web API that the client app communicates with:
+
+- **Resource Protection**: It protects the resources that the client app wants to access. It validates the access tokens sent by the client app to ensure that the request is authenticated and authorized.
+- **Data Processing**: Handles business logic, data storage, and data retrieval. It may also communicate with other services and databases.
+- **Token Validation**: Uses the signing keys provided by Azure AD (through the JWKS endpoint) to validate the access tokens.
+- **Authorization**: Implements authorization checks to ensure that the authenticated user has the correct permissions to perform the requested actions.
+
+The server app is also registered in Azure AD and has its own Application (client) ID. It uses this information to validate tokens and ensure that they are intended for itself (using the `aud` claim in the token).
+
+### Interaction Between Client and Server Apps
+Here's a typical interaction flow:
+
+1. **Authentication**: The user authenticates to the client app using Azure AD.
+2. **Token Acquisition**: The client app obtains an access token from Azure AD.
+3. **API Call**: The client app sends the access token in the authorization header when making API calls to the server app.
+4. **Token Validation**: The server app validates the token using Azure AD's public keys.
+5. **Authorization**: Once the token is validated, the server app checks if the authenticated user is authorized to perform the requested operation.
+6. **Response**: The server app performs the requested action and sends a response back to the client app.
+
+This setup allows for secure and scalable applications where the authentication and authorization logic is managed centrally by Azure AD, and the applications can focus on providing business value.
