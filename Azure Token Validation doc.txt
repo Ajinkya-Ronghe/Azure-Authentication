@@ -10,15 +10,6 @@ Both flows are fundamental to modern authentication and authorization practices,
 
 
 
-The options you've mentioned, Client Credentials Flow and Authorization Code Flow, are both part of the OAuth 2.0 protocol, which Azure Active Directory (Azure AD) supports for authentication and authorization. Here is where they fit in:
-
-### 1. Client Credentials Flow
-This falls under the **Application-based Authentication** category. It is used when an application acts on its own behalf to access resources. For example, a daemon service or a web API that does not interact with user credentials but requires access to resources in Azure AD would use the Client Credentials Flow. The application is authenticated based on its registered identity within Azure AD, which is represented by an Application ID and a credential like a client secret or certificate.
-
-### 2. Authorization Code Flow
-This is a part of the **Token-based Authentication** category, specifically the **OAuth 2.0** and **OpenID Connect** protocols. It is used by applications that interact with users and require access to user data. After the user authenticates and authorizes the application, Azure AD issues an authorization code. This code is then sent to the application, which exchanges it for an access token (and optionally a refresh token). This flow is typically used by web applications and mobile apps that have the capability of securely storing the client secret.
-
-Both flows are fundamental to modern authentication and authorization practices, allowing for secure delegated access. The Client Credentials Flow is used for server-to-server communication without user interaction, while the Authorization Code Flow involves user interaction and is used for granting applications permissions on behalf of the user.
 
 
 In the context of Azure Active Directory (Azure AD) and application development, the terms "client app" and "server app" typically refer to the two components of a web application or service that interact with each other using Azure AD for authentication and authorization. These terms align with the common web development architecture where you have a frontend (client) and a backend (server).
@@ -54,3 +45,32 @@ Here's a typical interaction flow:
 6. **Response**: The server app performs the requested action and sends a response back to the client app.
 
 This setup allows for secure and scalable applications where the authentication and authorization logic is managed centrally by Azure AD, and the applications can focus on providing business value.
+
+
+
+
+
+The information provided is a synthesis of widely accepted principles and practices in modern web development, particularly those pertaining to OAuth 2.0 and OpenID Connect authentication and authorization protocols, as well as Microsoft's Azure Active Directory (Azure AD) documentation.
+
+If you are looking for more detailed information or official documentation, you can find it in the following resources provided by Microsoft:
+
+1. **Microsoft Azure Documentation**: This is the primary source for all Azure-related services, including Azure Active Directory. The documentation provides a comprehensive guide on how to use Azure AD for authentication and authorization, along with information on registering applications, implementing various OAuth 2.0 flows, and securing APIs.
+   - [Azure Active Directory documentation](https://docs.microsoft.com/en-us/azure/active-directory/)
+
+2. **Microsoft Identity Platform Documentation**: This covers the specific aspects of the Microsoft identity platform, which includes Azure AD and is used to secure applications.
+   - [Microsoft identity platform](https://docs.microsoft.com/en-us/azure/active-directory/develop/)
+
+3. **OAuth 2.0 and OpenID Connect protocols**: These are open standards for authentication and authorization used by Azure AD and other identity providers.
+   - [OAuth 2.0 Authorization Framework RFC](https://tools.ietf.org/html/rfc6749)
+   - [OpenID Connect Core 1.0 specification](https://openid.net/specs/openid-connect-core-1_0.html)
+
+4. **Microsoft Azure AD B2C Documentation**: If you are interested in customer-facing identity and access management, this set of documents provides guidance on implementing authentication for customer applications using Azure AD B2C.
+   - [Azure Active Directory B2C documentation](https://docs.microsoft.com/en-us/azure/active-directory-b2c/)
+
+5. **Azure AD Developer's Guide**: A practical guide for developers to integrate applications with Azure AD.
+   - [Integrating applications with Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-integrating-applications)
+
+6. **Microsoft Code Samples and Tutorials**: Microsoft provides various code samples and tutorials that demonstrate how to implement authentication and authorization in different scenarios using Azure AD.
+   - [Microsoft identity platform code samples (v2.0 endpoint)](https://docs.microsoft.com/en-us/azure/active-directory/develop/sample-v2-code)
+
+The principles I've described are not specific to Azure AD but apply to any OAuth 2.0 and OpenID Connect compliant identity provider. Azure AD is a widely used implementation of these protocols, offering advanced features and integration points for Microsoft services.
