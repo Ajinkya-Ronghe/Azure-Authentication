@@ -1,0 +1,1 @@
+curl -H "Authorization: Bearer your_token_here" http://localhost:8080/validate
