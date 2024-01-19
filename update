@@ -1,0 +1,13 @@
+select ceh itsm.ceh_incident_master.master_reference_id,
+ceh_itsm.ceh_incident_master.severity_id,
+ceh_itsm.ceh_incident_master.short_description, esh_main.ceh_warroom_incident_details.zoom_link,
+esh_main.ceh_warroom_incident_details.meeting_initiate_by, esh_main.ceh_warroom_incident_details.open_bridge_time,
+esh_main.ceh_warroom_incident_details.assigned_manager,
+esh_main.ceh_warroom_incident_details.inc_created_time,
+esh_main.ceh_warroom_incident_details.impacted_ci,
+esh_main.ceh_warroom_incident details.bridge_description from ceh_itsm.ceh_incident_master 
+JOIN esh_main.ceh_warroom_incident_details
+on ceh_itsm.ceh_incident_master.master_reference id = 
+esh_main.ceh_warroom_incident_details.incident_number
+and ceh_itsm.ceh_incident_master.master_reference_id = 'IM001386322
+and esh_main.ceh_warroom_incident_details.bridge_status='ACTIVE'; 
