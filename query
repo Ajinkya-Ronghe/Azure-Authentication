@@ -1,45 +1,6 @@
-WITH FilteredIncidents AS (
-    SELECT 
-        priority,
-        incident_number,
-        short_description
-    FROM 
-        esh_main.ceh_warroom_ongoing_critical_details
-    WHERE 
-        LOWER(priority) IN ('p1', 'p2', 'p3')
-)
-
-SELECT 
-    f.priority,
-    f.incident_number,
-    f.short_description,
-    SUM(CASE WHEN LOWER(i.bridge_type) LIKE '%mim%' THEN 1 ELSE 0 END) AS mim_count,
-    SUM(CASE WHEN LOWER(i.bridge_type) LIKE '%tech%' OR LOWER(i.bridge_type) LIKE '%eas%' THEN 1 ELSE 0 END) AS tech_eas_count,
-    SUM(CASE WHEN LOWER(i.bridge_type) LIKE '%bims%' THEN 1 ELSE 0 END) AS bims_count
-FROM 
-    FilteredIncidents f
-LEFT JOIN 
-    esh_main.ceh_warroom_incident_details i
-ON 
-    f.incident_number = i.incident_number
-GROUP BY 
-    f.priority, f.incident_number, f.short_description;
-
-
-
-
-
-SELECT 
-    priority,
-    incident_number,
-    short_description,
-    SUM(CASE WHEN LOWER(bridge_type) LIKE '%mim%' THEN 1 ELSE 0 END) AS mim_count,
-    SUM(CASE WHEN LOWER(bridge_type) LIKE '%tech%' OR LOWER(bridge_type) LIKE '%eas%' THEN 1 ELSE 0 END) AS tech_eas_count,
-    SUM(CASE WHEN LOWER(bridge_type) LIKE '%bims%' THEN 1 ELSE 0 END) AS bims_count
-FROM 
-    ceh_incident_master
-WHERE 
-    LOWER(priority) NOT IN ('p1', 'p2', 'p3')
-GROUP BY 
-    priority, incident_number, short_description;
-
+<bean id="..." class="...">
+    <property name="query" value="SELECT priority, incident_number, short_description, SUM(CASE WHEN LOWER(bridge_type) LIKE &apos;%mim%&apos; THEN 1 ELSE 0 END) AS mim_count, SUM(CASE WHEN LOWER(bridge_type) LIKE &apos;%tech%&apos; OR LOWER(bridge_type) LIKE &apos;%eas%&apos; THEN 1 ELSE 0 END) AS tech_eas_count, SUM(CASE WHEN LOWER(bridge_type) LIKE &apos;%bims%&apos; THEN 1 ELSE 0 END) AS bims_count FROM ceh_incident_master WHERE LOWER(priority) NOT IN (&apos;p1&apos;, &apos;p2&apos;, &apos;p3&apos;) GROUP BY priority, incident_number, short_description"/>
+</bean>
+<bean id="..." class="...">
+    <property name="query" value="SELECT c.priority, c.incident_number, c.short_description, COUNT(CASE WHEN LOWER(i.bridge_type) LIKE &apos;%mim%&apos; THEN 1 END) AS mim_count, COUNT(CASE WHEN LOWER(i.bridge_type) LIKE &apos;%tech%&apos; OR LOWER(i.bridge_type) LIKE &apos;%eas%&apos; THEN 1 END) AS tech_eas_count, COUNT(CASE WHEN LOWER(i.bridge_type) LIKE &apos;%bims%&apos; THEN 1 END) AS bims_count FROM esh_main.ceh_warroom_ongoing_critical_details c LEFT JOIN esh_main.ceh_warroom_incident_details i ON c.incident_number = i.incident_number WHERE LOWER(c.priority) IN (&apos;p1&apos;, &apos;p2&apos;, &apos;p3&apos;) GROUP BY c.priority, c.incident_number, c.short_description"/>
+</bean>
