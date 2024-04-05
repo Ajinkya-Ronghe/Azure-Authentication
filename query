@@ -24,3 +24,22 @@ ON
     f.incident_number = i.incident_number
 GROUP BY 
     f.priority, f.incident_number, f.short_description;
+
+
+
+
+
+SELECT 
+    priority,
+    incident_number,
+    short_description,
+    SUM(CASE WHEN LOWER(bridge_type) LIKE '%mim%' THEN 1 ELSE 0 END) AS mim_count,
+    SUM(CASE WHEN LOWER(bridge_type) LIKE '%tech%' OR LOWER(bridge_type) LIKE '%eas%' THEN 1 ELSE 0 END) AS tech_eas_count,
+    SUM(CASE WHEN LOWER(bridge_type) LIKE '%bims%' THEN 1 ELSE 0 END) AS bims_count
+FROM 
+    ceh_incident_master
+WHERE 
+    LOWER(priority) NOT IN ('p1', 'p2', 'p3')
+GROUP BY 
+    priority, incident_number, short_description;
+
