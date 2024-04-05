@@ -1,19 +1,28 @@
+WITH FilteredIncidents AS (
+    SELECT 
+        priority,
+        incident_number,
+        short_description
+    FROM 
+        esh_main.ceh_warroom_ongoing_critical_details
+    WHERE 
+        LOWER(priority) IN ('p1', 'p2', 'p3')
+)
+
 SELECT 
-    c.priority, 
-    c.incident_number,
-    c.short_description,
+    f.priority,
+    f.incident_number,
+    f.short_description,
     COUNT(CASE WHEN LOWER(i.bridge_type) LIKE '%mim%' THEN 1 END) AS mim_count,
     COUNT(CASE WHEN LOWER(i.bridge_type) LIKE '%tech%' OR LOWER(i.bridge_type) LIKE '%eas%' THEN 1 END) AS tech_eas_count,
     COUNT(CASE WHEN LOWER(i.bridge_type) LIKE '%bims%' THEN 1 END) AS bims_count
 FROM 
-    esh_main.ceh_warroom_ongoing_critical_details c
+    FilteredIncidents f
 LEFT JOIN 
     esh_main.ceh_warroom_incident_details i
 ON 
-    c.incident_number = i.incident_number
-WHERE 
-    LOWER(c.priority) IN ('p1', 'p2', 'p3')
+    f.incident_number = i.incident_number
 GROUP BY 
-    c.priority, 
-    c.incident_number,
-    c.short_description;
+    f.priority,
+    f.incident_number,
+    f.short_description;
