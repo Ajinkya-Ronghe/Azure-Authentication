@@ -1,25 +1,19 @@
-select ceh itsm.ceh incident master.master reference id,
-
-ceh itsm.ceh incident master.severity id,
-
-ceh itsm.ceh incident master.short description,
-
-esh main.ceh warroom incident details.zoom link,
-
-esh main.ceh warroom incident details.meeting initiate by, esh main.ceh warroom incident details.open bridge time,
-
-esh main.ceh warroom incident details.assigned manager,
-
-esh main.ceh warroom incident details.inc created time,
-
-esh main.ceh warroom incident_details.impacted_ci
-
-from ceh itsm.ceh incident master JOIN
-
-esh main.ceh warroom incident details
-
-on ceh itsm.ceh incident master.master reference id
-
-esh main.ceh warroom incident details.incident number
-
-and ceh itsm.ceh incident master.master reference id 'IM001348231' =
+SELECT 
+    c.priority, 
+    c.incident_number,
+    c.short_description,
+    COUNT(CASE WHEN i.bridge_type LIKE '%mim%' THEN 1 END) AS mim_count,
+    COUNT(CASE WHEN i.bridge_type LIKE '%tech%' OR i.bridge_type LIKE '%eas%' THEN 1 END) AS tech_eas_count,
+    COUNT(CASE WHEN i.bridge_type LIKE '%bims%' THEN 1 END) AS bims_count
+FROM 
+    esh_main.ceh_warroom_ongoing_critical_details c
+LEFT JOIN 
+    esh_main.ceh_warroom_incident_details i
+ON 
+    c.incident_number = i.incident_number
+WHERE 
+    c.priority IN ('P1', 'P2', 'P3')
+GROUP BY 
+    c.priority, 
+    c.incident_number,
+    c.short_description;
