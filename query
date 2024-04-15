@@ -10,9 +10,9 @@ SELECT
     c.priority,
     c.incident_number,
     c.short_description,
-    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE '%mim%' AND c.status = 'active' THEN i.incident_number ELSE NULL END) AS mim_count,
-    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE '%tech%' AND c.status = 'active' THEN i.incident_number ELSE NULL END) AS tech_eas_count,
-    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE '%bims%' AND c.status = 'active' THEN i.incident_number ELSE NULL END) AS bims_count
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE '%mim%' AND LOWER(c.status) = 'active' THEN i.incident_number ELSE NULL END) AS mim_count,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE '%tech%' AND LOWER(c.status) = 'active' THEN i.incident_number ELSE NULL END) AS tech_eas_count,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE '%bims%' AND LOWER(c.status) = 'active' THEN i.incident_number ELSE NULL END) AS bims_count
 FROM
     esh_main.ceh_warroom_ongoing_critical_details c
 LEFT JOIN
@@ -21,4 +21,5 @@ WHERE
     LOWER(c.priority) IN ('p1', 'p2', 'p3')
 GROUP BY
     c.priority, c.incident_number, c.short_description;
+
 
