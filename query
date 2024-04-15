@@ -4,3 +4,21 @@
 <bean id="..." class="...">
     <property name="query" value="SELECT c.priority, c.incident_number, c.short_description, COUNT(CASE WHEN LOWER(i.bridge_type) LIKE &apos;%mim%&apos; THEN 1 END) AS mim_count, COUNT(CASE WHEN LOWER(i.bridge_type) LIKE &apos;%tech%&apos; OR LOWER(i.bridge_type) LIKE &apos;%eas%&apos; THEN 1 END) AS tech_eas_count, COUNT(CASE WHEN LOWER(i.bridge_type) LIKE &apos;%bims%&apos; THEN 1 END) AS bims_count FROM esh_main.ceh_warroom_ongoing_critical_details c LEFT JOIN esh_main.ceh_warroom_incident_details i ON c.incident_number = i.incident_number WHERE LOWER(c.priority) IN (&apos;p1&apos;, &apos;p2&apos;, &apos;p3&apos;) GROUP BY c.priority, c.incident_number, c.short_description"/>
 </bean>
+
+
+SELECT
+    c.priority,
+    c.incident_number,
+    c.short_description,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE '%mim%' THEN i.incident_number ELSE NULL END) AS mim_count,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE '%tech%' THEN i.incident_number ELSE NULL END) AS tech_eas_count,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE '%bims%' THEN i.incident_number ELSE NULL END) AS bims_count
+FROM
+    esh_main.ceh_warroom_ongoing_critical_details c
+LEFT JOIN
+    esh_main.ceh_warroom_incident_details i ON c.incident_number = i.incident_number
+WHERE
+    LOWER(c.priority) IN ('p1', 'p2', 'p3')
+GROUP BY
+    c.priority, c.incident_number, c.short_description;
+
