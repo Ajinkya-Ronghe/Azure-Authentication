@@ -24,3 +24,19 @@ GROUP BY
 
 
 
+
+SELECT
+    id,
+    COUNT(DISTINCT CASE WHEN LOWER(bridge_type) LIKE '%mim%' AND LOWER(bridge_status) = 'active' THEN incident_number ELSE NULL END) AS mim_count,
+    COUNT(DISTINCT CASE WHEN LOWER(bridge_type) LIKE '%tech%' AND LOWER(bridge_status) = 'active' THEN incident_number ELSE NULL END) AS tech_eas_count,
+    COUNT(DISTINCT CASE WHEN LOWER(bridge_type) LIKE '%bims%' AND LOWER(bridge_status) = 'active' THEN incident_number ELSE NULL END) AS bims_count
+FROM
+    esh_main.ceh_warroom_incident_details
+WHERE
+    incident_number = 'No Incident'
+GROUP BY
+    id;
+
+
+
+
