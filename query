@@ -23,6 +23,8 @@ GROUP BY
     c.priority, c.incident_number, c.short_description;
 
 
+https://dtccqa.service-now.com/api/now/table/incident?sysparm_query=number=IM00&sysparm_display_value=true&sysparm_exclude_reference_link=true&sysparm_fields=&sysparm_limit=1
+
 
 
 SELECT
