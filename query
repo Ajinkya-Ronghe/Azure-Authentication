@@ -73,3 +73,54 @@ GROUP BY
 
 
 
+
+
+
+-- First part of the UNION: Original query, modified to include only records present in both tables
+SELECT 
+    c.priority,
+    c.incident_number,
+    c.short_description,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE 'mim%' AND LOWER(i.bridge_status) = 'active' THEN i.incident_number ELSE NULL END) AS mim_count,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE 'tech%' AND LOWER(i.bridge_status) = 'active' THEN i.incident_number ELSE NULL END) AS tech_count,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE 'bims%' AND LOWER(i.bridge_status) = 'active' THEN i.incident_number ELSE NULL END) AS bims_count,
+    MAX(i.id) as id 
+FROM 
+    esh_main.ceh_warroom_ongoing_critical_details c
+    JOIN esh_main.ceh_warroom_incident_details i ON c.incident_number = i.incident_number 
+WHERE 
+    LOWER(c.priority) IN ('p1', 'p2', 'p3')
+GROUP BY 
+    c.priority, 
+    c.incident_number, 
+    c.short_description
+
+UNION ALL
+
+-- Second part of the UNION: Incidents from the incident_details table not present in the ongoing_critical_details table
+SELECT 
+    i.priority,
+    i.incident_number,
+    i.short_description,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE 'mim%' THEN i.incident_number ELSE NULL END) AS mim_count,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE 'tech%' THEN i.incident_number ELSE NULL END) AS tech_count,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE 'bims%' THEN i.incident_number ELSE NULL END) AS bims_count,
+    MAX(i.id) as id 
+FROM 
+    esh_main.ceh_warroom_incident_details i
+WHERE 
+    LOWER(i.priority) IN ('p1', 'p2', 'p3')
+    AND LOWER(i.bridge_status) = 'active'
+    AND NOT EXISTS (
+        SELECT 1 
+        FROM esh_main.ceh_warroom_ongoing_critical_details c
+        WHERE c.incident_number = i.incident_number
+    )
+GROUP BY 
+    i.priority, 
+    i.incident_number, 
+    i.short_description;
+
+
+
+
