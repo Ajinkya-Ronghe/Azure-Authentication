@@ -50,22 +50,26 @@ GROUP BY
 
 
 
-Subject: Leave Request and Acknowledgment for Visa Application (June 4-12, 2024)
+SELECT 
+    i.priority,
+    i.incident_number,
+    i.short_description,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE 'mim%' AND LOWER(i.bridge_status) = 'active' THEN i.incident_number ELSE NULL END) AS mim_count,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE 'tech%' AND LOWER(i.bridge_status) = 'active' THEN i.incident_number ELSE NULL END) AS tech_count,
+    COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE 'bims%' AND LOWER(i.bridge_status) = 'active' THEN i.incident_number ELSE NULL END) AS bims_count,
+    MAX(c.id) as id 
+FROM 
+    esh_main.ceh_warroom_incident_details i
+    LEFT JOIN esh_main.ceh_warroom_ongoing_critical_details c ON i.incident_number = c.incident_number 
+    AND LOWER(c.priority) IN ('p1', 'p2', 'p3')
+WHERE 
+    LOWER(i.priority) IN ('p1', 'p2', 'p3')
+    AND LOWER(i.bridge_status) = 'active'
+GROUP BY 
+    i.priority, 
+    i.incident_number, 
+    i.short_description;
 
-Hi Nishchay,
-
-I hope this email finds you well. I am planning a trip to Paris and Switzerland from June 4, 2024, to June 12, 2024, and would like to formally request leave for this period. This travel is for personal reasons, and I am in the process of applying for a visa, which requires an acknowledgment of my leave from Infosys.
-
-Could you please assist by providing a letter that confirms my employment with Infosys, the specified leave dates, and a statement affirming my return to work post-travel? This document is a crucial component of my visa application.
-
-I assure you that I will manage my responsibilities and ensure a smooth workflow in my absence. I am also happy to assist in any way to facilitate this process before my leave starts.
-
-Please let me know if you need any more details from my side or if there are forms and procedures I should complete as part of this request. I am aiming to submit my visa application by this week, so I would appreciate your support in providing the acknowledgment letter at your earliest convenience.
-
-Thank you very much for considering my request.
-
-Best regards,
-Ajinkya Ronghe
 
 
 
