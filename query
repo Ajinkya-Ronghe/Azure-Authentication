@@ -174,5 +174,25 @@ ORDER BY
 
 
 
+SELECT 
+    c.priority,
+    c.incident_number,
+    c.short_description,
+    COALESCE(COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE 'mim%' AND LOWER(i.bridge_status) = 'active' THEN i.incident_number ELSE NULL END), 0) AS mim_count,
+    COALESCE(COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE 'tech%' AND LOWER(i.bridge_status) = 'active' THEN i.incident_number ELSE NULL END), 0) AS tech_count,
+    COALESCE(COUNT(DISTINCT CASE WHEN LOWER(i.bridge_type) LIKE 'bims%' AND LOWER(i.bridge_status) = 'active' THEN i.incident_number ELSE NULL END), 0) AS bims_count,
+    COALESCE(MAX(i.id), 0) as id 
+FROM 
+    esh_main.ceh_warroom_ongoing_critical_details c
+    LEFT JOIN esh_main.ceh_warroom_incident_details i ON c.incident_number = i.incident_number AND LOWER(i.bridge_status) = 'active'
+WHERE 
+    LOWER(c.priority) IN ('p1', 'p2', 'p3')
+GROUP BY 
+    c.priority, 
+    c.incident_number, 
+    c.short_description;
+
+
+
 
 
