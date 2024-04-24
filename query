@@ -131,22 +131,17 @@ SELECT
     c.incident_number, 
     c.assigned_manager, 
     c.impacted_ci, 
-    c.impacted_business_unit,
+    c.impacted_buisness,
     c.short_description AS title,
     c.inc_created_time AS incident_opened,
-    (
-        (DATE_PART('day', CURRENT_TIMESTAMP - c.inc_created_time::timestamp) * 24 + 
-        DATE_PART('hour', CURRENT_TIMESTAMP - c.inc_created_time::timestamp)) * 60 +
-        DATE_PART('minute', CURRENT_TIMESTAMP - c.inc_created_time::timestamp)) * 60 + 
-        DATE_PART('second', CURRENT_TIMESTAMP - c.inc_created_time::timestamp)
-    ) AS incident_duration
+    DATE_PART('day', CURRENT_TIMESTAMP - c.inc_created_time::timestamp) * 86400 + 
+    DATE_PART('hour', CURRENT_TIMESTAMP - c.inc_created_time::timestamp) * 3600 +
+    DATE_PART('minute', CURRENT_TIMESTAMP - c.inc_created_time::timestamp) * 60 + 
+    DATE_PART('second', CURRENT_TIMESTAMP - c.inc_created_time::timestamp) AS incident_duration
 FROM 
     esh_main.ceh_warroom_ongoing_critical_details c
 WHERE 
     c.priority IN ('P1', 'P2', 'P3')
-ORDER BY 
-    c.priority, 
-    c.inc_created_time DESC
 
 UNION ALL
 
@@ -156,26 +151,26 @@ SELECT
     i.incident_number, 
     i.assigned_manager, 
     i.impacted_ci, 
-    i.impacted_business_unit,
+    i.impacted_buisness,
     i.short_description AS title,
     i.inc_created_time AS incident_opened,
-    (
-        (DATE_PART('day', CURRENT_TIMESTAMP - i.inc_created_time::timestamp) * 24 + 
-        DATE_PART('hour', CURRENT_TIMESTAMP - i.inc_created_time::timestamp)) * 60 +
-        DATE_PART('minute', CURRENT_TIMESTAMP - i.inc_created_time::timestamp)) * 60 + 
-        DATE_PART('second', CURRENT_TIMESTAMP - i.inc_created_time::timestamp)
-    ) AS incident_duration
+    DATE_PART('day', CURRENT_TIMESTAMP - i.inc_created_time::timestamp) * 86400 + 
+    DATE_PART('hour', CURRENT_TIMESTAMP - i.inc_created_time::timestamp) * 3600 +
+    DATE_PART('minute', CURRENT_TIMESTAMP - i.inc_created_time::timestamp) * 60 + 
+    DATE_PART('second', CURRENT_TIMESTAMP - i.inc_created_time::timestamp) AS incident_duration
 FROM 
     esh_main.ceh_warroom_incident_details i
 WHERE 
     i.priority IN ('P1', 'P2', 'P3')
     AND i.bridge_status = 'active'
     AND NOT EXISTS (
-        SELECT 1 FROM esh_main.ceh_warroom_ongoing_critical_details c
+        SELECT 1 
+        FROM esh_main.ceh_warroom_ongoing_critical_details c
         WHERE c.incident_number = i.incident_number
     )
 ORDER BY 
-    i.priority, 
-    i.inc_created_time DESC;
+    priority, 
+    inc_created_time DESC;
+
 
 
