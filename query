@@ -133,11 +133,11 @@ SELECT
     c.impacted_ci, 
     c.impacted_buisness_unit, -- corrected column name
     c.short_description AS title,
-    CAST(c.inc_created_time AS timestamp) AS incident_opened,
-    DATE_PART('day', CURRENT_TIMESTAMP - CAST(c.inc_created_time AS timestamp)) * 86400 + 
-    DATE_PART('hour', CURRENT_TIMESTAMP - CAST(c.inc_created_time AS timestamp)) * 3600 +
-    DATE_PART('minute', CURRENT_TIMESTAMP - CAST(c.inc_created_time AS timestamp)) * 60 + 
-    DATE_PART('second', CURRENT_TIMESTAMP - CAST(c.inc_created_time AS timestamp)) AS incident_duration
+    c.inc_created_time AS incident_opened, -- assuming this is already a timestamp
+    DATE_PART('day', CURRENT_TIMESTAMP - c.inc_created_time) * 86400 + 
+    DATE_PART('hour', CURRENT_TIMESTAMP - c.inc_created_time) * 3600 +
+    DATE_PART('minute', CURRENT_TIMESTAMP - c.inc_created_time) * 60 + 
+    DATE_PART('second', CURRENT_TIMESTAMP - c.inc_created_time) AS incident_duration
 FROM 
     esh_main.ceh_warroom_ongoing_critical_details c
 WHERE 
@@ -153,11 +153,11 @@ SELECT
     i.impacted_ci, 
     i.impacted_buisness_unit, -- corrected column name
     i.short_description AS title,
-    i.inc_created_time AS incident_opened, -- assuming this is already a timestamp
-    DATE_PART('day', CURRENT_TIMESTAMP - i.inc_created_time) * 86400 + 
-    DATE_PART('hour', CURRENT_TIMESTAMP - i.inc_created_time) * 3600 +
-    DATE_PART('minute', CURRENT_TIMESTAMP - i.inc_created_time) * 60 + 
-    DATE_PART('second', CURRENT_TIMESTAMP - i.inc_created_time) AS incident_duration
+    CAST(i.inc_created_time AS timestamp) AS incident_opened, -- casting varchar to timestamp
+    DATE_PART('day', CURRENT_TIMESTAMP - CAST(i.inc_created_time AS timestamp)) * 86400 + 
+    DATE_PART('hour', CURRENT_TIMESTAMP - CAST(i.inc_created_time AS timestamp)) * 3600 +
+    DATE_PART('minute', CURRENT_TIMESTAMP - CAST(i.inc_created_time AS timestamp)) * 60 + 
+    DATE_PART('second', CURRENT_TIMESTAMP - CAST(i.inc_created_time AS timestamp)) AS incident_duration
 FROM 
     esh_main.ceh_warroom_incident_details i
 WHERE 
@@ -171,6 +171,7 @@ WHERE
 ORDER BY 
     priority, 
     inc_created_time DESC;
+
 
 
 
