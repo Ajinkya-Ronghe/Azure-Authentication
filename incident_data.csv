@@ -1,0 +1,5 @@
+incident_ticket_id,severity_id,incident_category_id,submitter,assigned_to,group_id,details,master_reference_id,service_ci_id,resource_ci_id,itsm_ci_id,sys_id,comments,ceh_task_id,new_resource_ci_id,old_resource_ci_id,created_on,state_id,last_updated_by,updated_on,sub_category,tenant_id,short_description,itsm_category_id,processed_state,routing_processed,assignment_processed,caused_by,u_caused_application,u_environment,cmdb_ci,u_fixed_by_change,u_incident_manager,opened_at,u_bimpact_desc
+"15517818,,7,,NULL,,""RNEELAME"",,""Mohan",Manner
+"00:59:38"",,NULL,,""NIASAUSERO01012"",,""2023-06-05","04:14:10"",NULL,,348,""EPS",UIS,|,DBA,Alert,|,IM001166627,|
+"15517819,,NULL,,NULL,,""VCHANDRA"",,""Ramyaa",Sri
+"04:31:02,,,NULL,,""NIASAUSERO01012"",""2023-06-05","04:14:08"",NULL,,348,""Price",feed,issue,in
