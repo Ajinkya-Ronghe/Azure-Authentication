@@ -226,17 +226,21 @@ WHERE
 
 
 
-SELECT DISTINCT ON (group_name) id, group_name AS name, group_email AS email_id, 1 AS order_column
-FROM esh_main.ceh_snow_oncall_user_details
-WHERE group_name LIKE CONCAT('%', @input_value, '%')
+SELECT id, name, email_id, 1 AS order_column, name AS matching_subtext
+FROM (
+    SELECT DISTINCT ON (name) id, group_name AS name, group_email AS email_id
+    FROM esh_main.ceh_snow_oncall_user_details
+    WHERE group_name LIKE CONCAT('%', @input_value, '%')
+) AS oncall_details
 
 UNION ALL
 
-SELECT id, name, email_id, 2 AS order_column
+SELECT id, name, email_id, 2 AS order_column, name AS matching_subtext
 FROM esh_main.ceh_snow_user_details
 WHERE name LIKE CONCAT('%', @input_value, '%')
 
 ORDER BY order_column, name;
+
 
 
 
