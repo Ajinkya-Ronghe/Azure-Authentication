@@ -194,6 +194,14 @@ GROUP BY
 
 
 
+
+
+
+
+
+
+
+
 SELECT
   ceh_itsm.ceh_incident_master.master_reference_id,
   ceh_itsm.ceh_incident_master.severity_id,
@@ -220,6 +228,22 @@ WHERE
   AND esh_main.ceh_warroom_incident_details.bridge_status = 'ACTIVE';
 
 
+SELECT id, group_name AS name, group_email AS email_id, 1 AS order_column
+FROM esh_main.ceh_snow_oncall_user_details
+WHERE group_name = @input_value
+
+UNION ALL
+
+SELECT id, user_name AS name, user_email AS email_id, 2 AS order_column
+FROM esh_main.ceh_snow_user_details
+WHERE user_name = @input_value
+AND NOT EXISTS (
+    SELECT 1
+    FROM esh_main.ceh_snow_oncall_user_details
+    WHERE group_name = @input_value
+)
+
+ORDER BY order_column, name;
 
 
 
