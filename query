@@ -293,16 +293,16 @@ ORDER BY match_preference, match_position, name;
 
 
 
-SELECT DISTINCT id, name, email_id, order_column, match_priority
+SELECT DISTINCT id, name, email_id
 FROM (
-    SELECT id, group_name AS name, group_email AS email_id,
+    SELECT id, name, email_id,
       CASE 
-        WHEN group_name = @input_value THEN 1
-        WHEN group_email = @input_value THEN 2
-        WHEN group_name LIKE CONCAT('%', SUBSTRING(@input_value FROM 1 FOR 3), '%') THEN 3
-        WHEN group_email LIKE CONCAT('%', SUBSTRING(@input_value FROM 1 FOR 3), '%') THEN 4
-        WHEN group_name LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 5
-        WHEN group_email LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 6
+        WHEN name = @input_value THEN 1
+        WHEN email_id = @input_value THEN 2
+        WHEN name LIKE CONCAT('%', SUBSTRING(@input_value FROM 1 FOR 3), '%') THEN 3
+        WHEN email_id LIKE CONCAT('%', SUBSTRING(@input_value FROM 1 FOR 3), '%') THEN 4
+        WHEN name LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 5
+        WHEN email_id LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 6
         ELSE 7
       END AS match_priority,
       1 AS order_column -- Priority for oncall user details
@@ -328,6 +328,7 @@ FROM (
           LOWER(email_id) LIKE CONCAT('%', LOWER(@input_value), '%')
 ) AS results
 ORDER BY order_column, match_priority, name;
+
 
 
 
