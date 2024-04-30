@@ -293,7 +293,7 @@ ORDER BY match_preference, match_position, name;
 
 
 
-SELECT DISTINCT id, name, email_id
+SELECT DISTINCT id, name, email_id, order_column, match_priority
 FROM (
     SELECT id, group_name AS name, group_email AS email_id,
       CASE 
@@ -328,6 +328,7 @@ FROM (
           LOWER(email_id) LIKE CONCAT('%', LOWER(@input_value), '%')
 ) AS results
 ORDER BY order_column, match_priority, name;
+
 
 
 
