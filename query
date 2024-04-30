@@ -295,14 +295,14 @@ ORDER BY match_preference, match_position, name;
 
 SELECT DISTINCT id, name, email_id
 FROM (
-    SELECT id, name, email_id,
+    SELECT id, group_name AS name, group_email AS email_id,
       CASE 
-        WHEN name = @input_value THEN 1
-        WHEN email_id = @input_value THEN 2
-        WHEN name LIKE CONCAT('%', SUBSTRING(@input_value FROM 1 FOR 3), '%') THEN 3
-        WHEN email_id LIKE CONCAT('%', SUBSTRING(@input_value FROM 1 FOR 3), '%') THEN 4
-        WHEN name LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 5
-        WHEN email_id LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 6
+        WHEN group_name = @input_value THEN 1
+        WHEN group_email = @input_value THEN 2
+        WHEN group_name LIKE CONCAT('%', SUBSTRING(@input_value FROM 1 FOR 3), '%') THEN 3
+        WHEN group_email LIKE CONCAT('%', SUBSTRING(@input_value FROM 1 FOR 3), '%') THEN 4
+        WHEN group_name LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 5
+        WHEN group_email LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 6
         ELSE 7
       END AS match_priority,
       1 AS order_column -- Priority for oncall user details
@@ -312,22 +312,23 @@ FROM (
 
     UNION ALL
 
-    SELECT id, name, email_id,
+    SELECT id, user_name AS name, email_id,
       CASE 
-        WHEN name = @input_value THEN 1
+        WHEN user_name = @input_value THEN 1
         WHEN email_id = @input_value THEN 2
-        WHEN name LIKE CONCAT('%', SUBSTRING(@input_value FROM 1 FOR 3), '%') THEN 3
+        WHEN user_name LIKE CONCAT('%', SUBSTRING(@input_value FROM 1 FOR 3), '%') THEN 3
         WHEN email_id LIKE CONCAT('%', SUBSTRING(@input_value FROM 1 FOR 3), '%') THEN 4
-        WHEN name LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 5
+        WHEN user_name LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 5
         WHEN email_id LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 6
         ELSE 7
       END AS match_priority,
       2 AS order_column -- Lower priority for general user details
     FROM esh_main.ceh_snow_user_details
-    WHERE LOWER(name) LIKE CONCAT('%', LOWER(@input_value), '%') OR
+    WHERE LOWER(user_name) LIKE CONCAT('%', LOWER(@input_value), '%') OR
           LOWER(email_id) LIKE CONCAT('%', LOWER(@input_value), '%')
 ) AS results
 ORDER BY order_column, match_priority, name;
+
 
 
 
