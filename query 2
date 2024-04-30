@@ -1,8 +1,11 @@
-SELECT DISTINCT id, name, email_id
+SELECT id, name, email_id, order_column, match_priority
 FROM (
-    SELECT id, name, email_id, order_column, match_priority
+    SELECT 
+        id, name, email_id, order_column, match_priority,
+        ROW_NUMBER() OVER (PARTITION BY name ORDER BY order_column, match_priority, id) AS rn
     FROM (
-        SELECT id, group_name AS name, group_email AS email_id,
+        SELECT 
+            id, group_name AS name, group_email AS email_id,
             CASE 
                 WHEN group_name = @input_value THEN 1
                 WHEN group_email = @input_value THEN 2
@@ -12,12 +15,13 @@ FROM (
                 WHEN group_email LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 6
                 ELSE 7
             END AS match_priority,
-            1 AS order_column -- Priority for oncall user details
+            1 AS order_column
         FROM esh_main.ceh_snow_oncall_user_details
 
         UNION ALL
 
-        SELECT id, name, email_id,
+        SELECT 
+            id, name, email_id,
             CASE 
                 WHEN name = @input_value THEN 1
                 WHEN email_id = @input_value THEN 2
@@ -27,8 +31,9 @@ FROM (
                 WHEN email_id LIKE CONCAT('%', SUBSTRING(@input_value FROM 4 FOR 3), '%') THEN 6
                 ELSE 7
             END AS match_priority,
-            2 AS order_column -- Lower priority for general user details
+            2 AS order_column
         FROM esh_main.ceh_snow_user_details
     ) AS combined_results
-    ORDER BY order_column, match_priority, name
-) AS ordered_results;
+) AS ranked_results
+WHERE rn = 1
+ORDER BY order_column, match_priority, name;
