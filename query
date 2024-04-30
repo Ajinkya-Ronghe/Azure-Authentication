@@ -291,6 +291,36 @@ WHERE LOWER(name) LIKE CONCAT('%', LOWER(@input_value), '%')
 ORDER BY match_preference, match_position, name;
 
 
+SELECT id, name, email_id,
+  CASE 
+    WHEN name = @input_value THEN 1
+    WHEN email_id = @input_value THEN 2
+    WHEN name LIKE CONCAT('%', @input_value, '%') THEN 3
+    WHEN email_id LIKE CONCAT('%', @input_value, '%') THEN 4
+    ELSE 5
+  END AS match_priority
+FROM (
+    SELECT id, group_name AS name, group_email AS email_id
+    FROM esh_main.ceh_snow_oncall_user_details
+    WHERE LOWER(group_name) LIKE CONCAT('%', LOWER(@input_value), '%') 
+       OR LOWER(group_email) LIKE CONCAT('%', LOWER(@input_value), '%')
+) AS oncall_details
+
+UNION ALL
+
+SELECT id, name, email_id,
+  CASE 
+    WHEN name = @input_value THEN 1
+    WHEN email_id = @input_value THEN 2
+    WHEN name LIKE CONCAT('%', @input_value, '%') THEN 3
+    WHEN email_id LIKE CONCAT('%', @input_value, '%') THEN 4
+    ELSE 5
+  END AS match_priority
+FROM esh_main.ceh_snow_user_details
+WHERE LOWER(name) LIKE CONCAT('%', LOWER(@input_value), '%')
+   OR LOWER(email_id) LIKE CONCAT('%', LOWER(@input_value), '%')
+
+ORDER BY match_priority, name;
 
 
 
