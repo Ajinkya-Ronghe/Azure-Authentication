@@ -1,0 +1,12 @@
+Increasing Heap Size:
+
+You can increase the maximum heap size allocated to your JVM using -Xmx (e.g., -Xmx1024m for 1024 MB). This gives your application more memory to work with, which can delay the onset of out-of-memory errors caused by memory leaks.
+Garbage Collector Tuning:
+
+Adjusting garbage collection parameters can help manage memory more efficiently. For instance, using the Concurrent Mark Sweep (CMS) or G1 garbage collector might improve how unused memory is reclaimed. You can set this with -XX:+UseG1GC for G1 GC or -XX:+UseConcMarkSweepGC for CMS.
+Heap Dump on Out-of-Memory Error:
+
+Using -XX:+HeapDumpOnOutOfMemoryError will cause the JVM to generate a heap dump when an out-of-memory error occurs. Although this does not prevent a memory leak, it allows you to analyze what was in memory at the time of the error, helping you identify the leak source.
+Verbose GC Logging:
+
+Enabling verbose garbage collection logging with -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps can provide insights into the garbage collection process, helping you understand how memory is being used and when it's being cleaned up.
