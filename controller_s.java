@@ -103,4 +103,8 @@ public class DRCSSPController {
             responseJson.put("status", status);
             logger.info("Authenticated SSP request status fetched successfully for UID: {}", uid);
             return ResponseEntity.ok(responseJson.toString());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(INTERNAL_ERROR_MSG);
         }
+    }
+}
