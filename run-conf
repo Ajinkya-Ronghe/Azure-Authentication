@@ -10,3 +10,7 @@ Using -XX:+HeapDumpOnOutOfMemoryError will cause the JVM to generate a heap dump
 Verbose GC Logging:
 
 Enabling verbose garbage collection logging with -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps can provide insights into the garbage collection process, helping you understand how memory is being used and when it's being cleaned up.
+
+
+Set Thread Priorities: Use -XX:ThreadPriorityPolicy to set priority of threads, potentially altering their behavior on shutdown.
+Force Garbage Collection Parameters: Adjust garbage collection settings to be more aggressive in reclaiming memory, which might indirectly affect thread termination behavior. For example, using -XX:+UseConcMarkSweepGC for the CMS garbage collector or -XX:+UseG1GC for the G1 garbage collector can help manage memory more efficiently.
