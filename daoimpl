@@ -1,0 +1,92 @@
+package com.infy.ceh.management.dtcc.dao.impl;
+
+import com.infy.ceh.management.dtcc.exception.CEHDaoException;
+import com.infy.ceh.management.dtcc.ssp.dto.SSPDTO;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Component;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+@Component
+public class DTCSSSPDaoImpl {
+
+    private static final Logger logger = LoggerFactory.getLogger(DTCSSSPDaoImpl.class);
+
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+
+    public DTCSSSPDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public void insertSSPRequestDetails(JSONObject obj) throws CEHDaoException {
+        logger.debug("Attempting to insert SSP request details.");
+        try {
+            MapSqlParameterSource param = new MapSqlParameterSource()
+                .addValue("ssp_uid", obj.getString("ssp_uid"))
+                .addValue("usecase_name", obj.getString("usecase_name"))
+                .addValue("description", obj.getString("description"))
+                .addValue("request_json", obj.toString());
+
+            jdbcTemplate.update("SQL_QUERY_HERE", param);
+            logger.info("SSP request details inserted successfully.");
+        } catch (SQLException | JSONException e) {
+            logger.error("Exception while inserting SSP request details: {}", e.getMessage(), e);
+            throw new CEHDaoException("Failed to insert SSP request details.", e);
+        }
+    }
+
+    public String getSSPRequestStatusById(String sspUid) throws CEHDaoException {
+        logger.debug("Fetching SSP request status for UID: {}", sspUid);
+        try {
+            String status = jdbcTemplate.queryForObject("SQL_QUERY_HERE", new MapSqlParameterSource("ssp_uid", sspUid), String.class);
+            logger.info("Fetched SSP status successfully for UID: {}", sspUid);
+            return status;
+        } catch (Exception e) {
+            logger.error("Error fetching SSP request status for UID: {}: {}", sspUid, e.getMessage(), e);
+            throw new CEHDaoException("Failed to fetch SSP status.", e);
+        }
+    }
+
+    public List<SSPDTO> getSSPDetails() throws CEHDaoException {
+        logger.debug("Retrieving all SSP details.");
+        try {
+            return jdbcTemplate.query("SQL_QUERY_HERE", new MapSqlParameterSource(), this::mapRowToSSPDTO);
+        } catch (Exception e) {
+            logger.error("Error retrieving SSP details: {}", e.getMessage(), e);
+            throw new CEHDaoException("Failed to retrieve SSP details.", e);
+        }
+    }
+
+    private SSPDTO mapRowToSSPDTO(ResultSet rs, int rowNum) throws SQLException {
+        SSPDTO sspdto = new SSPDTO();
+        sspdto.setSspUid(rs.getString("ssp_uid"));
+        sspdto.setUsecaseName(rs.getString("usecase_name"));
+        sspdto.setDescription(rs.getString("description"));
+        sspdto.setCreateDate(rs.getTimestamp("created_at"));
+        sspdto.setRequestJson(rs.getString("request_json"));
+        return sspdto;
+    }
+
+    public void upsertSSPDetailsToRequestMaster(SSPDTO sspRequestDTO) throws CEHDaoException {
+        logger.debug("Upserting SSP details to request master.");
+        try {
+            MapSqlParameterSource param = new MapSqlParameterSource()
+                .addValue("details", sspRequestDTO.getDetails())
+                .addValue("metadata", sspRequestDTO.getMetadata())
+                .addValue("attachment", "N");
+
+            jdbcTemplate.update("SQL_QUERY_FOR_UPSERT", param);
+            logger.info("SSP details upserted successfully.");
+        } catch (Exception e) {
+            logger.error("Exception in upserting SSP details to request master: {}", e.getMessage(), e);
+            throw new CEHDaoException("Failed to upsert SSP details.", e);
+        }
+    }
+}
