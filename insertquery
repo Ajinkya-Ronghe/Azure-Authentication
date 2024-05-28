@@ -1,0 +1,18 @@
+INSERT INTO ceh_service_request_master (
+    details, master_reference_id, state_id, updated_on, comments,
+    short_description, metadata, tenant_id, processed_state, vstatus,
+    submitter, assigned_to, sys_id, created_on
+)
+SELECT
+    :details, :master_reference_id, :state_id, NOW() AT TIME ZONE 'UTC', :comments,
+    :short_description, :metadata, :tenant_id, :processed_state, 'N',
+    'SSP API', 'NIA Bot', :sys_id, date_trunc('seconds', NOW()) AT TIME ZONE 'UTC'
+FROM
+    esh_org_units
+WHERE
+    unit_name = 'DTCC'
+    AND NOT EXISTS (
+        SELECT 1
+        FROM ceh_service_request_master
+        WHERE master_reference_id = :master_reference_id
+    );
