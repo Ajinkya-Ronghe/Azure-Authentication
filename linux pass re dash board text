@@ -1,0 +1,10 @@
+Email/DL Name Requirements: Multiple Email ids must be separated by comma.
+Password Requirements:i) Password must have from 14 to 24 characters
+ii) Password must have atleast 4 letters
+iii) Password must have atleast 2 digits
+iv) Password must have atleast 2 uppercase, 2 lowercase, 2 special symbol
+v) Password not contains user name or full name
+vi) Password not contains sequential numbers
+vii) Password should not contain s,i,',<,>, as they cause scripting vulnerabilities
+viii) Password should not be a Dictionary word
+ix) Password should not contain any cursor
